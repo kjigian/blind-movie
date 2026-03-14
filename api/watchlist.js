@@ -14,12 +14,16 @@ export default async function handler(req, res) {
     // 1. Fetch the RSS feed (server-side = no CORS issues)
     const rssUrl = `https://letterboxd.com/${encodeURIComponent(username)}/watchlist/rss/`;
     const rssRes = await fetch(rssUrl, {
-      headers: { "User-Agent": "BlindPick/1.0" },
+      headers: {
+        "User-Agent": "Mozilla/5.0 (compatible; BlindPick/1.0; +https://blind-pick.vercel.app)",
+        "Accept": "application/rss+xml, application/xml, text/xml, */*",
+      },
     });
 
     if (!rssRes.ok) {
+      console.error(`Letterboxd RSS returned HTTP ${rssRes.status} for "${username}"`);
       return res.status(404).json({
-        error: `Could not fetch watchlist for "${username}". Make sure the username is correct and the watchlist is public.`,
+        error: `Could not fetch watchlist for "${username}" (HTTP ${rssRes.status}). Make sure the username is correct and the watchlist is public.`,
       });
     }
 
